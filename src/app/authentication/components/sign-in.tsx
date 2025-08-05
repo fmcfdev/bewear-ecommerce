@@ -1,7 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -22,6 +24,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { authClient } from "@/lib/auth-client";
 
 const formSchema = z.object({
   email: z.email("E-mail inválido"),
@@ -33,6 +36,8 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 const SignInForm = () => {
+  const router = useRouter();
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -40,6 +45,39 @@ const SignInForm = () => {
       password: "",
     },
   });
+
+  const onSubmit = async ({ email, password }: FormValues) => {
+    await authClient.signIn.email(
+      {
+        email,
+        password,
+      },
+      {
+        onRequest: () => {
+          console.log("Autenticando");
+        },
+        onSuccess: () => {
+          router.push("/");
+        },
+        onError: (ctx) => {
+          if (
+            ctx.error.code === "INVALID_EMAIL_OR_PASSWORD" ||
+            ctx.error.code === "USER_NOT_FOUND"
+          ) {
+            toast.error("E-mail e/ou senha inválido(s)");
+            form.setError("email", {
+              message: "E-mail ou senha inválido",
+            });
+            return form.setError("password", {
+              message: "E-mail ou senha inválido",
+            });
+          }
+          toast.error(ctx.error.message);
+        },
+      },
+    );
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -89,10 +127,5 @@ const SignInForm = () => {
     </Form>
   );
 };
-
-function onSubmit(values: FormValues) {
-  console.log("Formulario validade e enviado");
-  console.log(values);
-}
 
 export default SignInForm;

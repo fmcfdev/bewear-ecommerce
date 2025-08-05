@@ -52,7 +52,6 @@ const SignUpForm = () => {
   });
 
   const onSubmit = async ({ name, email, password }: FormValues) => {
-    console.log(name, email, password);
     await authClient.signUp.email(
       {
         name,
@@ -61,7 +60,7 @@ const SignUpForm = () => {
       },
       {
         onRequest: () => {
-          return console.log("Autenticando ");
+          console.log("Realizando o cadastro");
         },
         onSuccess: () => {
           router.push("/");
