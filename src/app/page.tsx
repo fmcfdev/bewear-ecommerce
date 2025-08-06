@@ -1,6 +1,7 @@
 import { desc } from "drizzle-orm";
 import Image from "next/image";
 
+import BrandList from "@/components/common/brand-list";
 import CategorySelector from "@/components/common/category-selector";
 import Footer from "@/components/common/footer";
 import { Header } from "@/components/common/header";
@@ -22,6 +23,16 @@ const Home = async () => {
   });
   const categories = await db.query.categoryTable.findMany({});
 
+  const brands = [
+    "nike",
+    "adidas",
+    "puma",
+    "new-balance",
+    "converse",
+    "polo",
+    "zara",
+  ];
+
   return (
     <>
       <Header />
@@ -36,6 +47,8 @@ const Home = async () => {
             className="h-auto w-full"
           />
         </div>
+
+        <BrandList title="Marcas parceiras" brands={brands} />
 
         <ProductList products={products} title="Mais vendidos" />
 
