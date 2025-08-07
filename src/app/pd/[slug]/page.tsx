@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
@@ -35,7 +35,10 @@ const ProductDetailsPage = async ({ params }: ProductDetailsPageProps) => {
   }
 
   const likelyProducts = await db.query.productTable.findMany({
-    where: eq(productTable.categoryId, productVariant.product.categoryId),
+    where: and(
+      eq(productTable.categoryId, productVariant.product.categoryId),
+      ne(productTable.id, productVariant.product.id),
+    ),
     with: {
       variants: true,
     },
@@ -90,7 +93,9 @@ const ProductDetailsPage = async ({ params }: ProductDetailsPageProps) => {
           <p className="text-sm">{productVariant.product.description}</p>
         </div>
 
-        <ProductList products={likelyProducts} title="Talvez você goste" />
+        {likelyProducts?.length > 0 && (
+          <ProductList products={likelyProducts} title="Talvez você goste" />
+        )}
 
         <Footer />
       </div>
