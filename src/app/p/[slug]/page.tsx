@@ -6,11 +6,11 @@ import ProductItem from "@/components/common/product-item";
 import { db } from "@/db";
 import { categoryTable, productTable } from "@/db/schema";
 
-interface CategoryPageProps {
+interface ProductProps {
   params: Promise<{ slug: string }>;
 }
 
-const CategoryPage = async ({ params }: CategoryPageProps) => {
+const ProductPage = async ({ params }: ProductProps) => {
   const { slug } = await params;
   const category = await db.query.categoryTable.findFirst({
     where: eq(categoryTable.slug, slug),
@@ -46,4 +46,4 @@ const CategoryPage = async ({ params }: CategoryPageProps) => {
   );
 };
 
-export default CategoryPage;
+export default ProductPage;
