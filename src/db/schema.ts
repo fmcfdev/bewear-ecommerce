@@ -120,3 +120,45 @@ export const verificationTable = pgTable("verification_table", {
     () => /* @__PURE__ */ new Date(),
   ),
 });
+
+export const shippingAddressTable = pgTable("shipping_address", {
+  id: uuid().primaryKey().defaultRandom(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => userTable.id, { onDelete: "cascade" }),
+  recipientName: text().notNull(),
+  street: text().notNull(),
+  number: text().notNull(),
+  complement: text(),
+  city: text().notNull(),
+  state: text().notNull(),
+  neighborhood: text().notNull(),
+  zipCode: text().notNull(),
+  country: text().notNull(),
+  phone: text().notNull(),
+  email: text().notNull(),
+  cpfOrCnpj: text().notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const shippingAddressRelations = relations(
+  shippingAddressTable,
+  ({ one }) => ({
+    user: one(userTable, {
+      fields: [shippingAddressTable.userId],
+      references: [userTable.id],
+    }),
+    // cart: one(cartTable, {
+    //   fields: [shippingAddressTable.id],
+    //   references: [cartTable.shippingAddressId],
+    // }),
+  }),
+);
+
+export const userRelations = relations(userTable, ({ many, one }) => ({
+  shippingAddresses: many(shippingAddressTable),
+  // cart: one(cartTable, {
+  //   fields: [userTable.id],
+  //   references: [cartTable.userId],
+  // }),
+}));
