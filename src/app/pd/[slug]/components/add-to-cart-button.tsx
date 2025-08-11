@@ -26,6 +26,9 @@ const AddToCartButton = ({
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
+      toast.success("Produto adicionado!", {
+        duration: 1500,
+      });
     },
     onError: (error) => {
       if (error?.message.toLocaleUpperCase() === "UNAUTHORIZED") {
