@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon } from "lucide-react";
+import { toast } from "sonner";
 
 import { addProductToCart } from "@/actions/add-cart-product";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,11 @@ const AddToCartButton = ({
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+    onError: (error) => {
+      if (error?.message.toLocaleUpperCase() === "UNAUTHORIZED") {
+        toast.error("Entre no sistema para adicionar produtos no carrinho!");
+      }
     },
   });
   return (
